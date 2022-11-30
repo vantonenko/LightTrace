@@ -1,6 +1,6 @@
 using LightTrace.Extensions;
 
-namespace LightTrace.Tests
+namespace LightTrace.Tests.ExtensionsTests
 {
     public class StringExtensionsTests
     {
@@ -10,7 +10,7 @@ namespace LightTrace.Tests
         [TestCase("123", 10, "123")]
         [TestCase("123", 0, "")]
         [TestCase("123", 2, "12")]
-        public void TakeFirst_Empty_Success(string input, int count, string expectedOutput) => 
+        public void TakeFirst_Empty_Success(string input, int count, string expectedOutput) =>
             Assert.That(input.TakeFirst(count), Is.EqualTo(expectedOutput));
     }
 }
