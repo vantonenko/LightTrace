@@ -10,9 +10,6 @@ using Newtonsoft.Json;
 
 namespace LightTrace
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public sealed class Tracer : IDisposable
     {
         private readonly string _name;
@@ -41,11 +38,6 @@ namespace LightTrace
             }.Start();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="parameters"></param>
         public Tracer(string name, IEnumerable<(string name, string value)> parameters = null)
         {
             _name = name;
