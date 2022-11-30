@@ -38,7 +38,9 @@ namespace LightTrace.Extensions
                 }
                 else
                 {
-                    return $"{value:F1} {unit}";
+                    return string.IsNullOrEmpty(unit) 
+                        ? $"{(int)value}"
+                        : $"{value:F1} {unit}";
                 }
             }
 
