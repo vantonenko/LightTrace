@@ -6,8 +6,13 @@ namespace ConsoleApp2.Tracing;
 
 internal sealed class Tracer : IDisposable
 {
-    private static Stack<TraceEntry> ParentTraceEntriesStack { get; } = new();
-    private static readonly TraceEntries RootTraceEntries = new();
+    private static readonly ThreadLocal<TracingThreadContext> ThreadLocal = 
+        new(() => new TracingThreadContext(), true);
+
+    private static TracingThreadContext TracingThreadContext => ThreadLocal.Value;
+
+    private static Stack<TraceEntry> ParentTraceEntriesStack => TracingThreadContext.ParentTraceEntriesStack;
+    private static TraceEntries RootTraceEntries => TracingThreadContext.RootTraceEntries;
 
     private readonly TraceEntry _currentTraceEntry;
     private readonly Stopwatch _stopwatch;
@@ -38,5 +43,10 @@ internal sealed class Tracer : IDisposable
         ParentTraceEntriesStack.Pop();
     }
 
-    public static TraceEntries GetRootTraceEntries() => RootTraceEntries;
+    /// <summary>
+    /// Get all the aggregated traces per thread.
+    /// </summary>
+    /// <remarks>The method isn't thread safe. Accessing that while the intensive trace collection may result in exceptions.</remarks>
+    public static IEnumerable<TraceEntries> GetRootTraceEntries() => 
+        ThreadLocal.Values.Select(o => o.RootTraceEntries);
 }

@@ -1,4 +1,5 @@
 ﻿using ConsoleApp2.Tracing;
+using ConsoleApp2.Tracing.Data;
 using ConsoleApp2.Tracing.Extensions;
 
 using (new Tracer("Trace1"))
@@ -35,4 +36,7 @@ using (new Tracer("Trace2"))
     Thread.Sleep(50);
 }
 
-Console.WriteLine($"Traces:\n{Tracer.GetRootTraceEntries().AsMdReport()}");
+foreach (TraceEntries traceEntries in Tracer.GetRootTraceEntries())
+{
+    Console.WriteLine($"Traces:\n{traceEntries.AsMdReport()}");
+}
