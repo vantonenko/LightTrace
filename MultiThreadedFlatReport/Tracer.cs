@@ -48,7 +48,9 @@ namespace LightTrace
         #region IDisposable
 
         /// <inheritdoc />
-        public void Dispose() =>
+        public void Dispose()
+        {
+            _stopwatch.Stop();
             AggregatedTraces.AddOrUpdate(
                 _name,
                 (1, _stopwatch.Elapsed, _stopwatch.Elapsed, _stopwatch.Elapsed, _parameters),
@@ -62,6 +64,7 @@ namespace LightTrace
                         ? _parameters
                         : existingTrace.lastParameters
                 ));
+        }
 
         #endregion
 
