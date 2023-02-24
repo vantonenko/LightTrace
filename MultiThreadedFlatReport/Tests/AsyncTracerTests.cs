@@ -29,15 +29,16 @@ internal class AsyncTracerTests
         }
         Task.WaitAll(tasks);
 
+        CallContext callContext = CallStackTrace.GetCalls();
         foreach (string testName in testNames)
         {
-            ValidateResult(AsyncTracer.Calls[testName], testName, deep);
+            ValidateResult(callContext.Calls.Single(call => call.Name == testName), testName, deep);
         }
     }
 
     private async Task CallFunctionAsync(string funName, int callDeep, int currentDeep = 0)
     {
-        using (new AsyncTracer(funName))
+        using (new CallStackTrace(funName))
         {
             await Task.Delay(TestDelayMilliseconds);
             currentDeep++;
@@ -51,20 +52,22 @@ internal class AsyncTracerTests
     private string GenerateFuncName(string funcName, int deep)
         => $"{funcName}_{deep}";
 
-    private void ValidateResult(AsyncTracer.AsyncContext context, string funcName, int deep, int currentDeep = 0)
+    private void ValidateResult(CallContext context, string funcName, int deep, int currentDeep = 0, long parentTotalTicks = long.MaxValue)
     {
         currentDeep++;
         if (deep > currentDeep)
         {
             var fName = GenerateFuncName(funcName, currentDeep);
-            ValidateResult(context.Calls[fName], fName, deep, currentDeep);
+            var currentContext = context.Calls.Single(call => call.Name == fName);
+            ValidateResult(currentContext, fName, deep, currentDeep, currentContext.TotalTicks);
+        }
+        else
+        {
+            Assert.IsEmpty(context.Calls);
         }
 
         Assert.That(context.Name, Is.EqualTo(funcName));
-        if (context.Parent != null)
-        {
-            Assert.LessOrEqual(context.TotalTicks, context.Parent.TotalTicks);
-        }
+        Assert.LessOrEqual(context.TotalTicks, parentTotalTicks);
     }
 
 }

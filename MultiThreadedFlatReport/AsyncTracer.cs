@@ -2,36 +2,26 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Threading;
-using LightTrace.Extensions;
-using Newtonsoft.Json;
 
 namespace LightTrace
 {
-    public sealed class AsyncTracer : IDisposable
+    public sealed class CallStackTrace : IDisposable
     {
         private readonly Stopwatch _stopwatch;
-        //public static readonly AsyncContext RootCallContext = new AsyncContext("Root", null);
-        public static readonly ConcurrentDictionary<string, AsyncContext> Calls = new();
+        private static readonly AsyncContext RootCalls = new ("Root", null);
         private static readonly AsyncLocal<AsyncContext> Context = new();
 
-        public AsyncTracer(string name)
+        public CallStackTrace(string name)
         {
-            Context.Value = Context.Value == null
-                ? Calls.GetOrAdd(name, fName => new AsyncContext(fName, null))
-                : Context.Value.Calls.GetOrAdd(name, fName => new AsyncContext(fName, Context.Value));
-            //if (Context.Value == null)
-            //{
-            //    Context.Value = RootCallContext.Calls.GetOrAdd(name, fName => new AsyncContext(fName, null));
-            //}
-            //else
-            //{
-            //    var context = Context.Value;
-            //    Context.Value = context.Calls.GetOrAdd(name, fName => new AsyncContext(fName, context));
-            //}
+            var context = Context.Value ?? RootCalls;
+            Context.Value = context.Calls.GetOrAdd(name, fName => new AsyncContext(fName, context));
             _stopwatch = Stopwatch.StartNew();
+        }
+
+        public static CallContext GetCalls()
+        {
+            return RootCalls.GetCallContext();
         }
 
         #region IDisposable
@@ -46,18 +36,17 @@ namespace LightTrace
 
         #endregion
 
-        public class AsyncContext
+        private class AsyncContext
         {
             private long _totalTicks;
-            
-            public string Name { get; }
-            public long TotalTicks => _totalTicks;
+            private readonly string _name;
+
             public AsyncContext Parent { get; }
             public ConcurrentDictionary<string, AsyncContext> Calls { get; }
 
             internal AsyncContext(string name, AsyncContext parent)
             {
-                Name = name;
+                _name = name;
                 Parent = parent;
                 Calls = new ConcurrentDictionary<string, AsyncContext>();
             }
@@ -66,6 +55,34 @@ namespace LightTrace
             {
                 Interlocked.Add(ref _totalTicks, time.Ticks);
             }
+
+            internal CallContext GetCallContext()
+            {
+                List<CallContext> calls = new List<CallContext>(Calls.Count);
+                foreach (var call in Calls)
+                {
+                    var childCallContext = call.Value.GetCallContext();
+                    calls.Add(childCallContext);
+                }
+
+                long totalTicks = Interlocked.Read(ref _totalTicks);
+                var callContext = new CallContext(_name, totalTicks, calls);
+                return callContext;
+            }
+        }
+    }
+
+    public class CallContext
+    {
+        public string Name { get; }
+        public long TotalTicks { get; }
+        public IEnumerable<CallContext> Calls { get; }
+
+        internal CallContext(string name, long totalTicks, IEnumerable<CallContext> calls)
+        {
+            Name = name;
+            TotalTicks = totalTicks;
+            Calls = calls;
         }
     }
 }
