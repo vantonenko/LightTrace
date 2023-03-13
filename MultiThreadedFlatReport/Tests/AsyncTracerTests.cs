@@ -1,8 +1,15 @@
 ﻿namespace LightTrace.Tests;
 
+[NonParallelizable]
 internal class AsyncTracerTests
 {
     private const int TestDelayMilliseconds = 100;
+
+    [SetUp]
+    public void SetupBeforeEachTest()
+    {
+        CallStackTrace.Reset();
+    }
 
     [Test]
     [TestCase(1, 1, new[] {"Test"})]
@@ -17,7 +24,7 @@ internal class AsyncTracerTests
     [TestCase(20, 1, new[] { "Test", "Test1", "Test2" })]
     [TestCase(20, 2, new[] { "Test", "Test1", "Test2" })]
     [TestCase(20, 10, new[] { "Test", "Test1", "Test2" })]
-    public void Calls_Success(int deep, int threadCount, string[] testNames)
+    public void GetCalls_Success(int deep, int threadCount, string[] testNames)
     {
         var tasks = new Task[threadCount];
         foreach (string testName in testNames)
@@ -30,10 +37,41 @@ internal class AsyncTracerTests
         Task.WaitAll(tasks);
 
         CallContext callContext = CallStackTrace.GetCalls();
+
         foreach (string testName in testNames)
         {
             ValidateResult(callContext.Calls.Single(call => call.Name == testName), testName, deep);
         }
+    }
+
+    [Test]
+    public void AsMdReportInMillisecond_NoFilter()
+    {
+        using (new CallStackTrace())
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                CallLevel1();
+            }
+        }
+        CallContext callContext = CallStackTrace.GetCalls();
+        var mdLines = callContext.AsMdReportInMillisecond(0).ToList();
+        Assert.That(mdLines.Count, Is.EqualTo(6));
+    }
+
+    [Test]
+    public void AsMdReportInMillisecond_WithFilter()
+    {
+        using (new CallStackTrace())
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                CallLevel1();
+            }
+        }
+        CallContext callContext = CallStackTrace.GetCalls();
+        var mdLines = callContext.AsMdReportInMillisecond(1500).ToList();
+        Assert.That(mdLines.Count, Is.EqualTo(5));
     }
 
     private async Task CallFunctionAsync(string funName, int callDeep, int currentDeep = 0)
@@ -68,6 +106,23 @@ internal class AsyncTracerTests
 
         Assert.That(context.Name, Is.EqualTo(funcName));
         Assert.LessOrEqual(context.TotalTicks, parentTotalTicks);
+    }
+
+    private void CallLevel1()
+    {
+        using (new CallStackTrace())
+        {
+            Thread.Sleep(100);
+            CallLevel2();
+        }
+    }
+
+    private void CallLevel2()
+    {
+        using (new CallStackTrace())
+        {
+            Thread.Sleep(100);
+        }
     }
 
 }
