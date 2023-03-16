@@ -24,7 +24,7 @@ internal static class TraceEntriesExtensions
             TraceEntry traceEntry = kvp.Value;
             string currentPrefix = $" --- {prefix}";
 
-            yield return $"{currentPrefix}{kvp.Key} | {traceEntry.TimeSpan.TotalMilliseconds:F1} | {traceEntry.Count}";
+            yield return $"{currentPrefix}{kvp.Key} | {traceEntry.TimeSpan.AsTime()} | {traceEntry.Count.AsCount()}";
 
             foreach (string record in traceEntry.TraceEntries.GetRecords(currentPrefix))
             {
