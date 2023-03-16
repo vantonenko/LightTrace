@@ -1,4 +1,8 @@
-namespace ConsoleApp2.Tracing.Extensions
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace LightTrace.Extensions
 {
     internal static class UnitsExtensions
     {

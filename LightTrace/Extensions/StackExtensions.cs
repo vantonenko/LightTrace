@@ -1,4 +1,6 @@
-﻿namespace ConsoleApp2.Tracing.Extensions;
+﻿using System.Collections.Generic;
+
+namespace LightTrace.Extensions;
 
 internal static class StackExtensions
 {

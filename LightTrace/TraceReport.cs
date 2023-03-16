@@ -1,14 +1,17 @@
-﻿using System.Diagnostics;
-using ConsoleApp2.Tracing.Extensions;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading;
+using LightTrace.Extensions;
 
-namespace ConsoleApp2.Tracing;
+namespace LightTrace;
 
 public class TraceReport
 {
     private static readonly TimeSpan ReportInterval = TimeSpan.FromSeconds(15);
     private static readonly string ReportFolder = Environment.GetEnvironmentVariable("Temp");
     private static readonly string ProcessName = Process.GetCurrentProcess().ProcessName;
-    
+
     public static string ReportFile { get; } = Path.Combine(ReportFolder, $"{ProcessName}_Traces.md");
 
     public static void Start()

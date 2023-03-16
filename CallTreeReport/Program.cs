@@ -1,5 +1,5 @@
-﻿using ConsoleApp2.Tracing;
-using ConsoleApp2.Tracing.Extensions;
+﻿using LightTrace;
+using LightTrace.Extensions;
 
 do
 {

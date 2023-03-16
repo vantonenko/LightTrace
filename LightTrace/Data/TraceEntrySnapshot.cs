@@ -1,6 +1,8 @@
-﻿namespace ConsoleApp2.Tracing.Data;
+﻿using System;
 
-internal class TraceEntrySnapshot
+namespace LightTrace.Data;
+
+public class TraceEntrySnapshot
 {
     public int Count;
     

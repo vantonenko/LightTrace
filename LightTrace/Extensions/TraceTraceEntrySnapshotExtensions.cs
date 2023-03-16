@@ -1,10 +1,12 @@
-﻿using ConsoleApp2.Tracing.Data;
+﻿using System.Collections.Generic;
+using System.Linq;
+using LightTrace.Data;
 
-namespace ConsoleApp2.Tracing.Extensions;
+namespace LightTrace.Extensions;
 
-internal static class TraceTraceEntrySnapshotExtensions
+public static class TraceTraceEntrySnapshotExtensions
 {
-    internal static IEnumerable<string> AsMdReport(this TraceEntrySnapshots traces) =>
+    public static IEnumerable<string> AsMdReport(this TraceEntrySnapshots traces) =>
         new[]
             {
                 "| Path | Time | Count |",
@@ -15,7 +17,7 @@ internal static class TraceTraceEntrySnapshotExtensions
                     .GetRecords()
                     .Select(line => $"| {line} |"));
 
-    internal static string AsMdReportString(this TraceEntrySnapshots traces) => string.Join("\n", traces.AsMdReport());
+    public static string AsMdReportString(this TraceEntrySnapshots traces) => string.Join("\n", traces.AsMdReport());
 
     private static IEnumerable<string> GetRecords(this TraceEntrySnapshots traces, string prefix = null)
     {

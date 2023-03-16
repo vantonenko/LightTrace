@@ -1,16 +1,20 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
-using ConsoleApp2.Tracing.Data;
-using ConsoleApp2.Tracing.Extensions;
+using System.Linq;
+using System.Threading;
+using LightTrace.Data;
+using LightTrace.Extensions;
 
-namespace ConsoleApp2.Tracing;
+namespace LightTrace;
 
-internal sealed class Tracer : IDisposable
+public sealed class Tracer : IDisposable
 {
     private static readonly AsyncLocal<Stack<TraceEntry>> AsyncLocal = new();
 
     private static Stack<TraceEntry> TraceEntryStack => AsyncLocal.Value ??= new Stack<TraceEntry>();
-    
+
     private static readonly TraceEntries RootTraceEntries = new();
 
     private readonly TraceEntry _currentTraceEntry;
@@ -58,15 +62,14 @@ internal sealed class Tracer : IDisposable
         public TraceEntrySnapshots GetTraceSnapshot() =>
             new(
                 ToArray() // thread-safe enumeration, http://blog.i3arnon.com/2018/01/16/concurrent-dictionary-tolist/
-                    .Select(o =>
-                        new KeyValuePair<string, TraceEntrySnapshot>(
-                            o.Key,
-                            new TraceEntrySnapshot
+                    .ToDictionary(
+                        o => o.Key,
+                        o => new TraceEntrySnapshot
                             {
                                 Count = o.Value.Count,
                                 Ticks = Interlocked.Read(ref o.Value.Ticks), // 64 bit read isn't atomic
                                 TraceEntries = o.Value.TraceEntries.GetTraceSnapshot()
-                            })));
+                            }));
 
     }
 }
