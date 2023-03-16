@@ -2,7 +2,12 @@
 
 internal class TraceEntry
 {
-    public int Count { get; set; }
-    public TimeSpan TimeSpan { get; set; } = TimeSpan.Zero;
+    public int Count;
+    
+    public long Ticks = 0;
+
+    public TimeSpan TimeSpan => TimeSpan.FromTicks(Ticks);
+    
     public TraceEntries TraceEntries { get; set; } = new();
 }
+

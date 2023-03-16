@@ -12,7 +12,7 @@ internal sealed class Tracer : IDisposable
     private static TracingThreadContext TracingThreadContext => ThreadLocal.Value;
 
     private static Stack<TraceEntry> ParentTraceEntriesStack => TracingThreadContext.ParentTraceEntriesStack;
-    private static TraceEntries RootTraceEntries => TracingThreadContext.RootTraceEntries;
+    private static readonly TraceEntries RootTraceEntries = new();
 
     private readonly TraceEntry _currentTraceEntry;
     private readonly Stopwatch _stopwatch;
@@ -25,11 +25,15 @@ internal sealed class Tracer : IDisposable
                 ?.TraceEntries
             ?? RootTraceEntries;
 
-        _currentTraceEntry =
-            parentTraceEntries
-                .TryGetValue(name, out TraceEntry val)
-                    ? val :
-                    parentTraceEntries[name] = new TraceEntry();
+        // todo make this thread-safe
+        if (parentTraceEntries.TryGetValue(name, out TraceEntry val))
+        {
+            _currentTraceEntry = val;
+        }
+        else
+        {
+            _currentTraceEntry = parentTraceEntries[name] = new TraceEntry();
+        }
 
         _stopwatch = Stopwatch.StartNew();
 
@@ -38,15 +42,11 @@ internal sealed class Tracer : IDisposable
 
     public void Dispose()
     {
-        _currentTraceEntry.Count++;
-        _currentTraceEntry.TimeSpan += _stopwatch.Elapsed;
+        Interlocked.Increment(ref _currentTraceEntry.Count);
+        Interlocked.Add(ref _currentTraceEntry.Ticks, _stopwatch.ElapsedTicks);
+
         ParentTraceEntriesStack.Pop();
     }
 
-    /// <summary>
-    /// Get all the aggregated traces per thread.
-    /// </summary>
-    /// <remarks>The method isn't thread safe. Accessing that while the intensive trace collection may result in exceptions.</remarks>
-    public static IEnumerable<TraceEntries> GetRootTraceEntries() => 
-        ThreadLocal.Values.Select(o => o.RootTraceEntries);
+    public static TraceEntries GetRootTraceEntries() => RootTraceEntries;
 }

@@ -36,7 +36,4 @@ using (new Tracer("Trace2"))
     Thread.Sleep(50);
 }
 
-foreach (TraceEntries traceEntries in Tracer.GetRootTraceEntries())
-{
-    Console.WriteLine($"Traces:\n{traceEntries.AsMdReport()}");
-}
+Console.WriteLine($"Traces:\n{Tracer.GetRootTraceEntries().AsMdReport()}");

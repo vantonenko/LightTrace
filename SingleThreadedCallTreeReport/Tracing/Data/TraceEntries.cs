@@ -1,5 +1,7 @@
-﻿namespace ConsoleApp2.Tracing.Data;
+﻿using System.Collections.Concurrent;
 
-internal class TraceEntries : Dictionary<string, TraceEntry>
+namespace ConsoleApp2.Tracing.Data;
+
+internal class TraceEntries : ConcurrentDictionary<string, TraceEntry>
 {
 }
