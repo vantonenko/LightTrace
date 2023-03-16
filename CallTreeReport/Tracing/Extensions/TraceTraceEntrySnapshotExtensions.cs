@@ -7,7 +7,7 @@ internal static class TraceTraceEntrySnapshotExtensions
     internal static IEnumerable<string> AsMdReport(this TraceEntrySnapshots traces) =>
         new[]
             {
-                "| Path | Time, ms | Count |",
+                "| Path | Time | Count |",
                 "| --- | --- | --- |"
             }
             .Concat(
