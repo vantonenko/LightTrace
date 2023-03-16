@@ -30,5 +30,5 @@ public class TraceReport
     }
 
     private static void UpdateReportFile() =>
-        File.WriteAllLines(ReportFile, Tracer.GetRootTraceEntries().AsMdReport());
+        File.WriteAllLines(ReportFile, Tracer.GetTraceEntries().AsMdReport());
 }

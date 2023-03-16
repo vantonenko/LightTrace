@@ -2,9 +2,9 @@
 
 namespace ConsoleApp2.Tracing.Extensions;
 
-internal static class TraceEntriesExtensions
+internal static class TraceTraceEntrySnapshotExtensions
 {
-    internal static IEnumerable<string> AsMdReport(this TraceEntries traces) =>
+    internal static IEnumerable<string> AsMdReport(this IEnumerable<KeyValuePair<string, TraceEntrySnapshot>> traces) =>
         new[]
             {
                 "| Path | Time, ms | Count |",
@@ -15,15 +15,13 @@ internal static class TraceEntriesExtensions
                     .GetRecords()
                     .Select(line => $"| {line} |"));
 
-    internal static string AsMdReportString(this TraceEntries traces) => string.Join("\n", traces.AsMdReport());
+    internal static string AsMdReportString(this IEnumerable<KeyValuePair<string, TraceEntrySnapshot>> traces) => string.Join("\n", traces.AsMdReport());
 
-    private static IEnumerable<string> GetRecords(this TraceEntries traces, string prefix = null)
+    private static IEnumerable<string> GetRecords(this IEnumerable<KeyValuePair<string, TraceEntrySnapshot>> traces, string prefix = null)
     {
-        KeyValuePair<string, TraceEntry>[] threadSafePairs = traces.ToArray();
-
-        foreach (KeyValuePair<string, TraceEntry> kvp in threadSafePairs.OrderBy(t => t.Value.TimeSpan))
+        foreach (KeyValuePair<string, TraceEntrySnapshot> kvp in traces.OrderBy(t => t.Value.TimeSpan))
         {
-            TraceEntry traceEntry = kvp.Value;
+            TraceEntrySnapshot traceEntry = kvp.Value;
             string currentPrefix = $" --- {prefix}";
 
             yield return $"{currentPrefix}{kvp.Key} | {traceEntry.TimeSpan.AsTime()} | {traceEntry.Count.AsCount()}";

@@ -43,5 +43,5 @@ do
     Console.Clear();
     Console.WriteLine("Press any key to stop...");
     Console.WriteLine($"Check '{TraceReport.ReportFile}' file for the generated traces...");
-    Console.WriteLine($"Traces:\n{Tracer.GetRootTraceEntries().AsMdReportString()}");
+    Console.WriteLine($"Traces:\n{Tracer.GetTraceEntries().AsMdReportString()}");
 } while (!Console.KeyAvailable);

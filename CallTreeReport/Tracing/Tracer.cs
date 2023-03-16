@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Concurrent;
+using System.Diagnostics;
 using ConsoleApp2.Tracing.Data;
 using ConsoleApp2.Tracing.Extensions;
 
@@ -19,18 +20,11 @@ internal sealed class Tracer : IDisposable
 
     public Tracer(string name)
     {
-        _currentTraceEntry = GetCurrentTraceEntry(name);
+        _currentTraceEntry = GetOrCreateCurrentTraceEntry(name);
 
         _stopwatch = Stopwatch.StartNew();
 
         TraceEntryStack.Push(_currentTraceEntry);
-    }
-
-    private static TraceEntry GetCurrentTraceEntry(string name)
-    {
-        TraceEntries parentTraceEntries = TraceEntryStack.PeekOrDefault()?.TraceEntries ?? RootTraceEntries;
-
-        return parentTraceEntries.GetOrAdd(name, _ => new TraceEntry());
     }
 
     public void Dispose()
@@ -41,5 +35,36 @@ internal sealed class Tracer : IDisposable
         TraceEntryStack.Pop();
     }
 
-    public static TraceEntries GetRootTraceEntries() => RootTraceEntries;
+    public static IEnumerable<KeyValuePair<string, TraceEntrySnapshot>> GetTraceEntries() => RootTraceEntries.GetTraceSnapshot();
+
+    private static TraceEntry GetOrCreateCurrentTraceEntry(string name)
+    {
+        TraceEntries parentTraceEntries = TraceEntryStack.PeekOrDefault()?.TraceEntries ?? RootTraceEntries;
+
+        return parentTraceEntries.GetOrAdd(name, _ => new TraceEntry());
+    }
+
+    private class TraceEntry
+    {
+        public int Count;
+
+        public long Ticks;
+
+        public TraceEntries TraceEntries { get; } = new();
+    }
+
+    private class TraceEntries : ConcurrentDictionary<string, TraceEntry>
+    {
+        public IEnumerable<KeyValuePair<string, TraceEntrySnapshot>> GetTraceSnapshot() =>
+            ToArray() // thread-safe enumeration
+                .Select(o =>
+                    new KeyValuePair<string, TraceEntrySnapshot>(
+                        o.Key,
+                        new TraceEntrySnapshot
+                        {
+                            Count = o.Value.Count,
+                            Ticks = Interlocked.Read(ref o.Value.Ticks), // 64 bit read isn't atomic
+                            TraceEntries = o.Value.TraceEntries.GetTraceSnapshot()
+                        }));
+    }
 }
