@@ -4,7 +4,7 @@ namespace ConsoleApp2.Tracing.Extensions;
 
 internal static class TraceTraceEntrySnapshotExtensions
 {
-    internal static IEnumerable<string> AsMdReport(this IEnumerable<KeyValuePair<string, TraceEntrySnapshot>> traces) =>
+    internal static IEnumerable<string> AsMdReport(this TraceEntrySnapshots traces) =>
         new[]
             {
                 "| Path | Time, ms | Count |",
@@ -15,9 +15,9 @@ internal static class TraceTraceEntrySnapshotExtensions
                     .GetRecords()
                     .Select(line => $"| {line} |"));
 
-    internal static string AsMdReportString(this IEnumerable<KeyValuePair<string, TraceEntrySnapshot>> traces) => string.Join("\n", traces.AsMdReport());
+    internal static string AsMdReportString(this TraceEntrySnapshots traces) => string.Join("\n", traces.AsMdReport());
 
-    private static IEnumerable<string> GetRecords(this IEnumerable<KeyValuePair<string, TraceEntrySnapshot>> traces, string prefix = null)
+    private static IEnumerable<string> GetRecords(this TraceEntrySnapshots traces, string prefix = null)
     {
         foreach (KeyValuePair<string, TraceEntrySnapshot> kvp in traces.OrderBy(t => t.Value.TimeSpan))
         {

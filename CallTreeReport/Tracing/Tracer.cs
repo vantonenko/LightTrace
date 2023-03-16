@@ -35,7 +35,7 @@ internal sealed class Tracer : IDisposable
         TraceEntryStack.Pop();
     }
 
-    public static IEnumerable<KeyValuePair<string, TraceEntrySnapshot>> GetTraceEntries() => RootTraceEntries.GetTraceSnapshot();
+    public static TraceEntrySnapshots GetTraceEntries() => RootTraceEntries.GetTraceSnapshot();
 
     private static TraceEntry GetOrCreateCurrentTraceEntry(string name)
     {
@@ -55,16 +55,18 @@ internal sealed class Tracer : IDisposable
 
     private class TraceEntries : ConcurrentDictionary<string, TraceEntry>
     {
-        public IEnumerable<KeyValuePair<string, TraceEntrySnapshot>> GetTraceSnapshot() =>
-            ToArray() // thread-safe enumeration
-                .Select(o =>
-                    new KeyValuePair<string, TraceEntrySnapshot>(
-                        o.Key,
-                        new TraceEntrySnapshot
-                        {
-                            Count = o.Value.Count,
-                            Ticks = Interlocked.Read(ref o.Value.Ticks), // 64 bit read isn't atomic
-                            TraceEntries = o.Value.TraceEntries.GetTraceSnapshot()
-                        }));
+        public TraceEntrySnapshots GetTraceSnapshot() =>
+            new(
+                ToArray() // thread-safe enumeration, http://blog.i3arnon.com/2018/01/16/concurrent-dictionary-tolist/
+                    .Select(o =>
+                        new KeyValuePair<string, TraceEntrySnapshot>(
+                            o.Key,
+                            new TraceEntrySnapshot
+                            {
+                                Count = o.Value.Count,
+                                Ticks = Interlocked.Read(ref o.Value.Ticks), // 64 bit read isn't atomic
+                                TraceEntries = o.Value.TraceEntries.GetTraceSnapshot()
+                            })));
+
     }
 }

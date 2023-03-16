@@ -8,5 +8,5 @@ internal class TraceEntrySnapshot
 
     public TimeSpan TimeSpan => TimeSpan.FromTicks(Ticks);
 
-    public IEnumerable<KeyValuePair<string, TraceEntrySnapshot>> TraceEntries { get; set; }
+    public TraceEntrySnapshots TraceEntries { get; set; }
 }
