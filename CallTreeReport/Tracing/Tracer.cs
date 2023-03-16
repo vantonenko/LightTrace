@@ -8,7 +8,7 @@ internal sealed class Tracer : IDisposable
 {
     private static readonly AsyncLocal<Stack<TraceEntry>> AsyncLocal = new();
 
-    private static Stack<TraceEntry> TraceEntriesStack => AsyncLocal.Value ??= new Stack<TraceEntry>();
+    private static Stack<TraceEntry> TraceEntryStack => AsyncLocal.Value ??= new Stack<TraceEntry>();
     
     private static readonly TraceEntries RootTraceEntries = new();
 
@@ -17,17 +17,18 @@ internal sealed class Tracer : IDisposable
 
     public Tracer(string name)
     {
-        TraceEntries parentTraceEntries =
-            TraceEntriesStack
-                .PeekOrDefault()
-                ?.TraceEntries
-            ?? RootTraceEntries;
-
-        _currentTraceEntry = parentTraceEntries.GetOrAdd(name, _ => new TraceEntry());
+        _currentTraceEntry = GetCurrentTraceEntry(name);
 
         _stopwatch = Stopwatch.StartNew();
 
-        TraceEntriesStack.Push(_currentTraceEntry);
+        TraceEntryStack.Push(_currentTraceEntry);
+    }
+
+    private static TraceEntry GetCurrentTraceEntry(string name)
+    {
+        TraceEntries parentTraceEntries = TraceEntryStack.PeekOrDefault()?.TraceEntries ?? RootTraceEntries;
+
+        return parentTraceEntries.GetOrAdd(name, _ => new TraceEntry());
     }
 
     public void Dispose()
@@ -35,7 +36,7 @@ internal sealed class Tracer : IDisposable
         Interlocked.Increment(ref _currentTraceEntry.Count);
         Interlocked.Add(ref _currentTraceEntry.Ticks, _stopwatch.ElapsedTicks);
 
-        TraceEntriesStack.Pop();
+        TraceEntryStack.Pop();
     }
 
     public static TraceEntries GetRootTraceEntries() => RootTraceEntries;
