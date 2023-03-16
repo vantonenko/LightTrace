@@ -6,12 +6,12 @@ namespace ConsoleApp2.Tracing;
 
 internal sealed class Tracer : IDisposable
 {
-    private static readonly ThreadLocal<TracingThreadContext> ThreadLocal = 
-        new(() => new TracingThreadContext(), true);
+    private static readonly AsyncLocal<TracingThreadContext> AsyncLocal = new();
 
-    private static TracingThreadContext TracingThreadContext => ThreadLocal.Value;
+    private static TracingThreadContext TracingThreadContext => 
+        AsyncLocal.Value ?? (AsyncLocal.Value = new TracingThreadContext());
 
-    private static Stack<TraceEntry> ParentTraceEntriesStack => TracingThreadContext.ParentTraceEntriesStack;
+    private static Stack<TraceEntry> TraceEntriesStack => TracingThreadContext.ParentTraceEntriesStack;
     private static readonly TraceEntries RootTraceEntries = new();
 
     private readonly TraceEntry _currentTraceEntry;
@@ -20,7 +20,7 @@ internal sealed class Tracer : IDisposable
     public Tracer(string name)
     {
         TraceEntries parentTraceEntries =
-            ParentTraceEntriesStack
+            TraceEntriesStack
                 .PeekOrDefault()
                 ?.TraceEntries
             ?? RootTraceEntries;
@@ -29,7 +29,7 @@ internal sealed class Tracer : IDisposable
 
         _stopwatch = Stopwatch.StartNew();
 
-        ParentTraceEntriesStack.Push(_currentTraceEntry);
+        TraceEntriesStack.Push(_currentTraceEntry);
     }
 
     public void Dispose()
@@ -37,7 +37,7 @@ internal sealed class Tracer : IDisposable
         Interlocked.Increment(ref _currentTraceEntry.Count);
         Interlocked.Add(ref _currentTraceEntry.Ticks, _stopwatch.ElapsedTicks);
 
-        ParentTraceEntriesStack.Pop();
+        TraceEntriesStack.Pop();
     }
 
     public static TraceEntries GetRootTraceEntries() => RootTraceEntries;
