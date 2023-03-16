@@ -19,7 +19,7 @@ internal static class TraceTraceEntrySnapshotExtensions
 
     private static IEnumerable<string> GetRecords(this TraceEntrySnapshots traces, string prefix = null)
     {
-        foreach (KeyValuePair<string, TraceEntrySnapshot> kvp in traces.OrderBy(t => t.Value.TimeSpan))
+        foreach (KeyValuePair<string, TraceEntrySnapshot> kvp in traces.OrderByDescending(t => t.Value.TimeSpan))
         {
             TraceEntrySnapshot traceEntry = kvp.Value;
             string currentPrefix = $" --- {prefix}";
