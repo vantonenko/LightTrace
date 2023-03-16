@@ -25,15 +25,7 @@ internal sealed class Tracer : IDisposable
                 ?.TraceEntries
             ?? RootTraceEntries;
 
-        // todo make this thread-safe
-        if (parentTraceEntries.TryGetValue(name, out TraceEntry val))
-        {
-            _currentTraceEntry = val;
-        }
-        else
-        {
-            _currentTraceEntry = parentTraceEntries[name] = new TraceEntry();
-        }
+        _currentTraceEntry = parentTraceEntries.GetOrAdd(name, _ => new TraceEntry());
 
         _stopwatch = Stopwatch.StartNew();
 
