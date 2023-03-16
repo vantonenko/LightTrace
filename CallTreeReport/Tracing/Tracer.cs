@@ -6,12 +6,10 @@ namespace ConsoleApp2.Tracing;
 
 internal sealed class Tracer : IDisposable
 {
-    private static readonly AsyncLocal<TracingThreadContext> AsyncLocal = new();
+    private static readonly AsyncLocal<Stack<TraceEntry>> AsyncLocal = new();
 
-    private static TracingThreadContext TracingThreadContext => 
-        AsyncLocal.Value ?? (AsyncLocal.Value = new TracingThreadContext());
-
-    private static Stack<TraceEntry> TraceEntriesStack => TracingThreadContext.ParentTraceEntriesStack;
+    private static Stack<TraceEntry> TraceEntriesStack => AsyncLocal.Value ??= new Stack<TraceEntry>();
+    
     private static readonly TraceEntries RootTraceEntries = new();
 
     private readonly TraceEntry _currentTraceEntry;
