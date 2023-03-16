@@ -1,41 +1,47 @@
 ﻿using ConsoleApp2.Tracing;
 using ConsoleApp2.Tracing.Extensions;
 
-Parallel.ForEach(Enumerable.Range(0, 4), _0 =>
+do
 {
-    using (new Tracer("Trace1"))
+    Parallel.ForEach(Enumerable.Range(0, 4), _0 =>
     {
-        foreach (var _ in Enumerable.Range(0, 2))
+        using (new Tracer("Trace1"))
         {
-            using (new Tracer("Trace11"))
+            foreach (var _ in Enumerable.Range(0, 2))
             {
-                using (new Tracer("Trace111"))
+                using (new Tracer("Trace11"))
                 {
-                    Thread.Sleep(50);
-                }
-
-                foreach (var __ in Enumerable.Range(0, 3))
-                {
-                    using (new Tracer("Trace112"))
+                    using (new Tracer("Trace111"))
                     {
                         Thread.Sleep(50);
                     }
+
+                    foreach (var __ in Enumerable.Range(0, 3))
+                    {
+                        using (new Tracer("Trace112"))
+                        {
+                            Thread.Sleep(50);
+                        }
+                    }
                 }
+            }
+
+            Thread.Sleep(50);
+
+            using (new Tracer("Trace12"))
+            {
+                Thread.Sleep(50);
             }
         }
 
-        Thread.Sleep(50);
-
-        using (new Tracer("Trace12"))
+        using (new Tracer("Trace2"))
         {
             Thread.Sleep(50);
         }
-    }
+    });
 
-    using (new Tracer("Trace2"))
-    {
-        Thread.Sleep(50);
-    }
-});
-
-Console.WriteLine($"Traces:\n{Tracer.GetRootTraceEntries().AsMdReport()}");
+    Console.Clear();
+    Console.WriteLine("Press any key to stop...");
+    Console.WriteLine($"Check '{TraceReport.ReportFile}' file for the generated traces...");
+    Console.WriteLine($"Traces:\n{Tracer.GetRootTraceEntries().AsMdReportString()}");
+} while (!Console.KeyAvailable);

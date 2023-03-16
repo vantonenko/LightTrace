@@ -15,6 +15,8 @@ internal sealed class Tracer : IDisposable
     private readonly TraceEntry _currentTraceEntry;
     private readonly Stopwatch _stopwatch;
 
+    static Tracer() => TraceReport.Start();
+
     public Tracer(string name)
     {
         _currentTraceEntry = GetCurrentTraceEntry(name);

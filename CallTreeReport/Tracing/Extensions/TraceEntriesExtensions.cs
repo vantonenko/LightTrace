@@ -4,22 +4,24 @@ namespace ConsoleApp2.Tracing.Extensions;
 
 internal static class TraceEntriesExtensions
 {
-    internal static string AsMdReport(this TraceEntries traces) =>
-        string.Join(
-            "\n",
-            new[]
-                {
-                    "| Path | Time, ms | Count |",
-                    "| --- | --- | --- |"
-                }
+    internal static IEnumerable<string> AsMdReport(this TraceEntries traces) =>
+        new[]
+            {
+                "| Path | Time, ms | Count |",
+                "| --- | --- | --- |"
+            }
             .Concat(
                 traces
                     .GetRecords()
-                    .Select(line => $"| {line} |")));
+                    .Select(line => $"| {line} |"));
+
+    internal static string AsMdReportString(this TraceEntries traces) => string.Join("\n", traces.AsMdReport());
 
     private static IEnumerable<string> GetRecords(this TraceEntries traces, string prefix = null)
     {
-        foreach (KeyValuePair<string, TraceEntry> kvp in traces.OrderBy(t => t.Value.TimeSpan))
+        KeyValuePair<string, TraceEntry>[] threadSafePairs = traces.ToArray();
+
+        foreach (KeyValuePair<string, TraceEntry> kvp in threadSafePairs.OrderBy(t => t.Value.TimeSpan))
         {
             TraceEntry traceEntry = kvp.Value;
             string currentPrefix = $" --- {prefix}";
