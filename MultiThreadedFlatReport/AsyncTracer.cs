@@ -34,7 +34,7 @@ namespace LightTrace
         /// <summary>
         /// This method is used only for tests.
         /// </summary>
-        internal static void Reset()
+        public static void Reset()
         {
             RootCalls = new("Root", null);
             Context = new();

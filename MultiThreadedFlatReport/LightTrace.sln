@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightTrace", "LightTrace.cs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LightTrace.Tests", "Tests\LightTrace.Tests.csproj", "{DBB7CF01-D289-4369-9C2B-8E8B96C57484}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TraceBenchmark", "..\TraceBenchmark\TraceBenchmark.csproj", "{D866304D-C4DB-4F6C-8C9F-F2493E4E75B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{DBB7CF01-D289-4369-9C2B-8E8B96C57484}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBB7CF01-D289-4369-9C2B-8E8B96C57484}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBB7CF01-D289-4369-9C2B-8E8B96C57484}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D866304D-C4DB-4F6C-8C9F-F2493E4E75B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D866304D-C4DB-4F6C-8C9F-F2493E4E75B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D866304D-C4DB-4F6C-8C9F-F2493E4E75B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D866304D-C4DB-4F6C-8C9F-F2493E4E75B3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
