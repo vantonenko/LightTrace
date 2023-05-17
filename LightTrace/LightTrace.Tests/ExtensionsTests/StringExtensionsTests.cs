@@ -1,4 +1,5 @@
 using LightTrace.Extensions;
+using NUnit.Framework;
 
 namespace LightTrace.Tests.ExtensionsTests
 {

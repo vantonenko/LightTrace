@@ -14,7 +14,6 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM.
-
 [assembly: Guid("491681c7-d71d-446e-9320-89ac8259ee41")]
 
 [assembly: InternalsVisibleTo("LightTrace.Tests")]
