@@ -8,9 +8,9 @@
     <PackageId>LightTrace</PackageId>
     <Title>LightTrace</Title>
     <Description>A lightweight tracing library for .NET applications</Description>
-    <Authors>vantonenko</Authors>
-    <Company>vantonenko</Company>
-    <Copyright>Copyright © vantonenko</Copyright>
+    <Authors>Vladyslav Antonenko</Authors>
+    <Company>Vladyslav Antonenko</Company>
+    <Copyright>Â© Vladyslav Antonenko</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/vantonenko/LightTrace</PackageProjectUrl>
     <RepositoryUrl>https://github.com/vantonenko/LightTrace</RepositoryUrl>
