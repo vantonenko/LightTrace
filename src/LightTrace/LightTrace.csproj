@@ -3,6 +3,29 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
+    
+    <!-- Package Information -->
+    <PackageId>LightTrace</PackageId>
+    <Title>LightTrace</Title>
+    <Description>A lightweight tracing library for .NET applications</Description>
+    <Authors>vantonenko</Authors>
+    <Company>vantonenko</Company>
+    <Copyright>Copyright © vantonenko</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/vantonenko/LightTrace</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/vantonenko/LightTrace</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>tracing;logging;performance;diagnostics;dotnet</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    
+    <!-- Generate package on build -->
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" Condition="Exists('..\..\README.md')" />
+  </ItemGroup>
 
 </Project>
