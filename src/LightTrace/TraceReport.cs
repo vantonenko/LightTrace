@@ -38,7 +38,7 @@ public class TraceReport
         var folderEnvVar = Environment.GetEnvironmentVariable("LIGHT_TRACE_REPORT_FOLDER");
         if (string.IsNullOrEmpty(folderEnvVar))
         {
-            return Environment.GetEnvironmentVariable("Temp");
+            folderEnvVar = Environment.GetEnvironmentVariable("Temp");
         }
 
         return folderEnvVar;
