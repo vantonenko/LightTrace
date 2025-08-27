@@ -1,16 +1,16 @@
-# LightTrace
+﻿# LightTrace
 
 A lightweight tracing library for .NET applications that provides simple, efficient performance monitoring and diagnostics.
 
 ## Features
 
-- **Lightweight**: Minimal overhead with high-performance tracing
-- **Async/Await Support**: Thread-safe tracing with AsyncLocal context preservation
-- **Hierarchical Tracing**: Support for nested trace operations
-- **Markdown Reports**: Automatically generated trace reports in markdown format
-- **Configurable**: Environment variable-based configuration
-- **Simple API**: Easy-to-use disposable pattern with `using` statements
-- **.NET Standard 2.0**: Compatible with .NET Framework, .NET Core, and .NET 5+
+- ⚡ **Lightweight**: Minimal overhead with high-performance tracing
+- 🔄 **Async/Await Support**: Thread-safe tracing with AsyncLocal context preservation
+- 🌳 **Hierarchical Tracing**: Support for nested trace operations
+- 📊 **Markdown Reports**: Automatically generated trace reports in markdown format
+- ⚙️ **Configurable**: Environment variable-based configuration
+- 🎯 **Simple API**: Easy-to-use disposable pattern with `using` statements
+- 🌐 **.NET Standard 2.0**: Compatible with .NET Framework, .NET Core, and .NET 5+
 
 ## Installation
 
