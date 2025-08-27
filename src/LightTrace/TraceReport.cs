@@ -8,8 +8,8 @@ namespace LightTrace;
 
 public class TraceReport
 {
-    private static readonly TimeSpan ReportInterval = TimeSpan.FromSeconds(15);
-    private static readonly string ReportFolder = Environment.GetEnvironmentVariable("Temp");
+    private static readonly TimeSpan ReportInterval = GetReportInterval();
+    private static readonly string ReportFolder = GetReportFolder();
     private static readonly string ProcessName = Process.GetCurrentProcess().ProcessName;
 
     public static string ReportFile { get; } = Path.Combine(ReportFolder, $"{ProcessName}_Traces.md");
@@ -20,6 +20,28 @@ public class TraceReport
         {
             IsBackground = true
         }.Start();
+    }
+
+    private static TimeSpan GetReportInterval()
+    {
+        var intervalEnvVar = Environment.GetEnvironmentVariable("LIGHT_TRACE_REPORT_INTERVAL");
+        if (!string.IsNullOrEmpty(intervalEnvVar) && double.TryParse(intervalEnvVar, out var seconds))
+        {
+            return TimeSpan.FromSeconds(seconds);
+        }
+
+        return TimeSpan.FromSeconds(15);
+    }
+
+    private static string GetReportFolder()
+    {
+        var folderEnvVar = Environment.GetEnvironmentVariable("LIGHT_TRACE_REPORT_FOLDER");
+        if (string.IsNullOrEmpty(folderEnvVar))
+        {
+            return Environment.GetEnvironmentVariable("Temp");
+        }
+
+        return folderEnvVar;
     }
 
     private static void DoReport()
