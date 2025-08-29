@@ -8,7 +8,7 @@
     <PackageId>LightTrace</PackageId>
     <Title>LightTrace</Title>
     <Description>A lightweight tracing library for .NET applications</Description>
-    <Authors>Vladyslav Antonenko</Authors>
+    <Authors>Oleksii Shapovalov, Serhii Kurylchyk, Vladyslav Antonenko</Authors>
     <Company>Vladyslav Antonenko</Company>
     <Copyright>© Vladyslav Antonenko</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
