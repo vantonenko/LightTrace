@@ -30,7 +30,7 @@ namespace LightTrace.Extensions
 
         private static string AutoAdjustUnits(double value, List<(int capacity, string unit)> units)
         {
-            foreach ((int capacity, string unit) in units)
+            foreach ((var capacity, var unit) in units)
             {
                 if (value > capacity)
                 {

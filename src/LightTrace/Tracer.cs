@@ -45,7 +45,7 @@ public sealed class Tracer : IDisposable
 
     private static TraceEntry GetOrCreateCurrentTraceEntry(string name)
     {
-        TraceEntries parentTraceEntries = TraceEntryStack.PeekOrDefault()?.TraceEntries ?? RootTraceEntries;
+        var parentTraceEntries = TraceEntryStack.PeekOrDefault()?.TraceEntries ?? RootTraceEntries;
 
         return parentTraceEntries.GetOrAdd(name, _ => new TraceEntry());
     }
