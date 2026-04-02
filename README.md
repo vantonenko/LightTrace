@@ -10,6 +10,7 @@ A lightweight tracing library for .NET applications that provides simple, effici
 - 📊 **Markdown Reports**: Automatically generated trace reports in markdown format
 - ⚙️ **Configurable**: Environment variable-based configuration
 - 🎯 **Simple API**: Easy-to-use disposable pattern with `using` statements
+- ✂️ **`_T` Shortcuts**: Concise helper methods for tracing with minimal boilerplate
 - 🌐 **.NET Standard 2.0**: Compatible with .NET Framework, .NET Core, and .NET 5+
 
 ## Installation
@@ -57,6 +58,29 @@ using (new Tracer("ProcessOrder"))
     }
 }
 ```
+
+### `_T` Shortcuts
+
+For a more concise syntax, use the static `_T` shortcut methods from the `ShortCuts` class. Import them with a `using static` directive:
+
+```csharp
+using LightTrace;
+using static LightTrace.ShortCuts;
+
+// Trace a void action
+_T("ValidateOrder", () => ValidateOrder(order));
+
+// Trace a function with a return value
+var result = _T("CalculateTotal", () => CalculateTotal(order));
+
+// Trace an async operation
+await _T("SaveOrder", () => SaveOrderAsync(order));
+
+// Trace an async operation with a return value
+var savedOrder = await _T("SaveOrder", () => SaveOrderAsync(order));
+```
+
+These shortcuts wrap the `using (new Tracer(...))` pattern into a single call, reducing boilerplate while preserving full tracing functionality including nested hierarchies.
 
 ## Advanced Usage
 
@@ -171,6 +195,20 @@ public class TraceReport
 // Convert trace data to markdown format
 public static string AsMdReportString(this TraceEntrySnapshots traces)
 public static IEnumerable<string> AsMdReport(this TraceEntrySnapshots traces)
+```
+
+### ShortCuts Class
+
+Static helper methods that wrap `Tracer` into concise one-liners. Import with `using static LightTrace.ShortCuts;`.
+
+```csharp
+public static class ShortCuts
+{
+    public static void _T(string name, Action func)              // Trace a synchronous action
+    public static T _T<T>(string name, Func<T> func)             // Trace a synchronous function
+    public static Task _T(string name, Func<Task> func)          // Trace an async action
+    public static Task<T> _T<T>(string name, Func<Task<T>> func) // Trace an async function
+}
 ```
 
 ## Performance Characteristics
